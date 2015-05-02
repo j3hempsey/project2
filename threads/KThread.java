@@ -440,7 +440,7 @@ public class KThread {
 		KThread test2 = new KThread(new PingTest(2));
 		test2.setName("forked thread2").fork();
 		//test.join();
-		test2.join();
+		//test2.join();
 		new PingTest(0).run();
 	}
 
