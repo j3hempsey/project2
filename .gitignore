@@ -1,5 +1,6 @@
 *.class
-
+#Ignore .class files
+/proj2/*/*/*.class
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
