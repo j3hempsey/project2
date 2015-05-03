@@ -81,6 +81,6 @@ public class Condition2 {
 
 	private Lock conditionLock;
 	private LinkedList<KThread> waitQueue;
-	private static final char dbgThread = 'q';
+	private static final char dbgThread = 't';
 
 }
