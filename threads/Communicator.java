@@ -16,8 +16,11 @@ public class Communicator {
 	public Communicator() {
 		this.lock = new Lock();
 		this.speakerLock = new Condition2(lock);
+		this.listenerLock = new Condition2(lock);
 		this.wordReady = false;
-	}
+		this.listener = 0;
+		this.speaker = 0;
+}
 
 	/**
 	 * Wait for a thread to listen through this communicator, and then transfer
@@ -30,9 +33,19 @@ public class Communicator {
 	 * @param word the integer to transfer.
 	 */
 	public void speak(int word) {
-		
-		// idk
-		
+		lock.acquire();
+		speaker++;
+		// if there is no listener, speaker waits
+		while (listener == 0) {
+			speakerLock.sleep();
+		}
+		//if listener is ready, then speaker prepares word
+		if (listener == 1) {
+			speakerLock.wake();
+			wordReady = true;
+			this.wordObj = word; //make word object to pass to listener
+		}
+		lock.release();
 	}
 
 	/**
@@ -42,10 +55,28 @@ public class Communicator {
 	 * @return the integer transferred.
 	 */
 	public int listen() {
-		return 0;
+		lock.acquire();
+		listener++;
+		int message = 0;
+		// if there is no speaker, listener waits
+		while (speaker == 0) {
+			listenerLock.sleep();
+		}
+		//if speaker is ready, then listener gets word from speaker
+		if (speaker == 1) {
+			listenerLock.wake();
+			message = wordObj.intValue();
+		}
+		listener--;
+		lock.release();
+		return message;
 	}
 	
 	private Lock lock;
 	private Condition2 speakerLock;
+	private Condition2 listenerLock;
 	private boolean wordReady;
+	private int listener;
+	private int speaker;
+	private Integer wordObj;
 }
