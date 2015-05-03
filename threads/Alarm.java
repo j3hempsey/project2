@@ -69,9 +69,7 @@ public class Alarm {
 	 * @see nachos.machine.Timer#getTime()
 	 */
 	public void waitUntil(long x) {
-		// for now, cheat just to get something working (busy waiting is bad)
 		long wakeTime = Machine.timer().getTime() + x;
-		
 
 		// lock the system
 		boolean int_status = Machine.interrupt().disable();
@@ -84,11 +82,10 @@ public class Alarm {
 		KThread.sleep();
 		
 		// unlock the system
-		Machine.interrupt().restore(int_status);
-		
+		Machine.interrupt().restore(int_status);	
 		
 	}
-	
+
 	private ArrayList<KThread> waitQueue;
 	private ArrayList<Long> timeQueue;
 	
