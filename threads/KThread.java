@@ -437,8 +437,8 @@ public class KThread {
 		KThread test = new KThread(new PingTest(1));
 		test.setName("forked thread").fork();
 		//test.join();
-		KThread test2 = new KThread(new PingTest(2));
-		test2.setName("forked thread2").fork();
+		//KThread test2 = new KThread(new PingTest(2));
+		//test2.setName("forked thread2").fork();
 		//test.join();
 		//test2.join();
 		new PingTest(0).run();
