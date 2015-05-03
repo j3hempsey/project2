@@ -69,6 +69,7 @@ public class Alarm {
 	 * @see nachos.machine.Timer#getTime()
 	 */
 	public void waitUntil(long x) {
+		if (x < 0) return; //negative number not valid
 		long wakeTime = Machine.timer().getTime() + x;
 
 		// lock the system
