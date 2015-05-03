@@ -2,6 +2,8 @@ package nachos.threads;
 
 import nachos.machine.*;
 
+import java.util.LinkedList;
+
 /**
  * A <i>communicator</i> allows threads to synchronously exchange 32-bit
  * messages. Multiple threads can be waiting to <i>speak</i>, and multiple
@@ -17,9 +19,10 @@ public class Communicator {
 		this.lock = new Lock();
 		this.speakerLock = new Condition2(lock);
 		this.listenerLock = new Condition2(lock);
-		this.wordReady = false;
-		this.listener = 0;
-		this.speaker = 0;
+		//this.listener = 0;
+		//this.speaker = 0;
+		listenerQueue = new LinkedList<KThread>();
+		speakerQueue = new LinkedList<KThread>();
 }
 
 	/**
@@ -34,18 +37,17 @@ public class Communicator {
 	 */
 	public void speak(int word) {
 		lock.acquire();
-		speaker++;
+		speakerQueue.addLast(KThread.currentThread());
 		// if there is no listener, speaker waits
-		while (listener == 0) {
+		while (listenerQueue.size() == 0) {
 			speakerLock.sleep();
 		}
-		//if listener is ready, then speaker prepares word
-		if (listener == 1) {
-			speakerLock.wake();
-			wordReady = true;
-			this.wordObj = word; //make word object to pass to listener
-		}
+		//listener is ready, then speaker prepares word
+		speakerLock.wake();
+		wordObj.addLast(word); //make word object to pass to listener
+		listenerLock.wakeAll();
 		lock.release();
+		return;
 	}
 
 	/**
@@ -56,18 +58,19 @@ public class Communicator {
 	 */
 	public int listen() {
 		lock.acquire();
-		listener++;
+		//listener++;
 		int message = 0;
 		// if there is no speaker, listener waits
-		while (speaker == 0) {
+		while (speakerQueue.size() == 0) {
 			listenerLock.sleep();
 		}
 		//if speaker is ready, then listener gets word from speaker
-		if (speaker == 1) {
-			listenerLock.wake();
-			message = wordObj.intValue();
-		}
-		listener--;
+		listenerQueue.removeFirst();
+		listenerLock.wake();
+		message = wordObj.remove();
+		//listener--;
+		if(listenerQueue.size() > 0 && wordObj.size() > 0) listenerLock.wakeAll();
+
 		lock.release();
 		return message;
 	}
@@ -75,8 +78,9 @@ public class Communicator {
 	private Lock lock;
 	private Condition2 speakerLock;
 	private Condition2 listenerLock;
-	private boolean wordReady;
 	private int listener;
 	private int speaker;
-	private Integer wordObj;
+	private LinkedList<Integer> wordObj;
+	private LinkedList<KThread> listenerQueue;
+	private LinkedList<KThread> speakerQueue;
 }
