@@ -41,7 +41,7 @@ public class Alarm {
 		// for each of the items in the queue
 		for (int i = 0; i < waitQueue.size(); i++) {
 			// is it time to wake up?
-			if (Machine.timer().getTime() > timeQueue.get(i)) {
+			if (Machine.timer().getTime() >= timeQueue.get(i)) {
 				// wake up that thread
 				waitQueue.get(i).ready();
 				// remove from wait queue
