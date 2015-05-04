@@ -49,7 +49,7 @@ public class Communicator {
 			speakerLock.sleep();
 		} else {
 			//listener is ready, then speaker prepares word
-			Lib.debug(dbgCom, "SpeakerLock waking");
+			Lib.debug(dbgCom, "ListenerLock waking");
 			listenerLock.wake();
 		}
 
